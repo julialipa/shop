@@ -28,6 +28,12 @@ void RemoveProduct();
 void ChangePrice();
 void ChangeStorage();
 void AddNewProduct();
+void EditProduct();
+void DeleteProduct();
+void ChangeEmployee();
+void AddNewEmployee();
+void EditEmployee();
+void DeleteEmployee();
 void Getline(std::string& stringName);
 
 template <typename Arr>
@@ -63,6 +69,7 @@ void Start()
 				if (choose == "1")
 				{
 					//готовый склад
+					ShowAdminMenu();
 					break;
 				}
 				else if (choose == "2")
@@ -167,7 +174,7 @@ void ShowAdminMenu()
 		}
 		else if (choose == "4")
 		{
-
+			RemoveProduct();
 		}
 		else if (choose == "5")
 		{
@@ -179,7 +186,7 @@ void ShowAdminMenu()
 		}
 		else if (choose == "7")
 		{
-
+			ChangeEmployee();
 		}
 		else if (choose == "8")
 		{
@@ -268,6 +275,15 @@ void ShowStorage(int mode)
 		for (int i = 0; i < size; i++)
 		{
 			std::cout << idArr[i] << "\t" << std::left << std::setw(30) << nameArr[i] << "\t" << "\t" << priceArr[i] << "\n";
+		}
+		std::cout << "\n\n";
+	}
+	else if (mode == 3)
+	{
+		std::cout << "\nID\t" << "Название\n";
+		for (int i = 0; i < size; i++)
+		{
+			std::cout << idArr[i] << "\t" << std::left << std::setw(30) << nameArr[i] << "\n";
 		}
 		std::cout << "\n\n";
 	}
@@ -462,11 +478,11 @@ void ChangeStorage()
 		}
 		else if (choose == "2")
 		{
-
+			EditProduct();
 		}
 		else if (choose == "3")
 		{
-
+			ChangeStorage();
 		}
 		else if (choose == "0")
 		{
@@ -475,6 +491,7 @@ void ChangeStorage()
 		else
 		{
 			std::cout << "\nОшибка ввода\n";
+			Sleep(800);
 		}
 	}
 }
@@ -579,7 +596,244 @@ void AddNewProduct()
 		}
 	}
 }
-void Getline(std::string& stringName)
+void EditProduct()
+{
+	std::string choose, newName;
+	int id{};
+	while (true)
+	{
+		system("cls");
+		std::cout << "1 - Начать\n0 - Отмена\n\nВвод: ";
+		Getline(choose);
+		if (choose == "1")
+		{
+			ShowStorage(3);
+			id = GetID();
+			while (true)
+			{
+				std::cout << "Введите название нового товара: ";
+				Getline(newName);
+				if (newName.size() <= 60 && newName.size() >= 2)
+				{
+					nameArr[id - 1] = newName;
+					break;
+				}
+				std::cout << "\nОшибка ввода. От 2 до 60 символов\n";
+			}
+			std::cout << "Название изменено\n";
+			Sleep(2000);
+		}
+		else if (choose == "0")
+		{
+			break;
+		}
+		else
+		{
+			std::cout << "\nОшибка ввода\n";
+		}
+	}
+}
+void DeleteProduct()
+{
+	std::string choose;
+	int id{};
+	while (true)
+	{
+		system("cls");
+		std::cout << "1 - Начать\n0 - Отмена\n\nВвод: ";
+		Getline(choose);
+		if (choose == "1")
+		{
+			ShowStorage();
+			int* tempID = new int[size];
+			int* tempCount = new int[size];
+			double* tempPrice = new double[size];
+			std::string* tempName = new std::string[size];
+			for (int i = 0; i < size; i++)
+			{
+				tempID[i] = idArr[i];
+				tempCount[i] = countArr[i];
+				tempPrice[i] = priceArr[i];
+				tempName[i] = nameArr[i];
+			}
+			delete[]idArr;
+			delete[]countArr;
+			delete[]priceArr;
+			delete[]nameArr;
+			size--;
+			idArr = new int[size];
+			countArr = new int[size];
+			priceArr = new double[size];
+			nameArr = new std::string[size];
+			id = GetID();
+			for (int i = 0, j = 0; i < size, j < size + 1; i++, j++)
+			{
+				if (j == id - 1)
+				{
+					j++;
+					idArr[i] = tempID[i];
+					countArr[i] = tempCount[j];
+					priceArr[i] = tempPrice[j];
+					nameArr[i] = tempName[j];
+				}
+				else
+				{
+					idArr[i] = tempID[i];
+					countArr[i] = tempCount[j];
+					priceArr[i] = tempPrice[j];
+					nameArr[i] = tempName[j];
+				}
+			}
+			std::cout << "Товар успешно удалён\n";
+			delete[]tempID;
+			delete[]tempCount;
+			delete[]tempPrice;
+			delete[]tempName;
+			Sleep(2000);
+		}
+		else if (choose == "0")
+		{
+			break;
+		}
+		else
+		{
+			std::cout << "\nОшибка ввода\n";
+		}
+	}
+}
+void ChangeEmployee()
+{
+	std::string choose;
+	while (true)
+	{
+		system("cls");
+		std::cout << "1 - Добавление нового сотрудника\n2 - Редактирование логина/пароля\n3 - Удаление сотрудника\n0 - Отмена\n\nВвод: ";
+		Getline(choose);
+		if (choose == "1")
+		{
+			
+		}
+		else if (choose == "2")
+		{
+			
+		}
+		else if (choose == "3")
+		{
+		
+		}
+		else if (choose == "0")
+		{
+			break;
+		}
+		else
+		{
+			std::cout << "\nОшибка ввода\n";
+			Sleep(800);
+		}
+	}
+}
+void AddNewEmployee()
+{
+	std::string choose, newLogin, newPass;
+	while (true)
+	{
+		system("cls");
+		std::cout << "1 - Начать\n0 - Отмена\n\nВвод: ";
+		Getline(choose);
+		if (choose == "1")
+		{
+			std::string* tempLogin = new std::string[userCount];
+			std::string* tempPass = new std::string[userCount];
+			for (int i = 0; i < userCount; i++)
+			{
+				tempLogin[i] = loginArr[i];
+				tempPass[i] = passArr[i];
+			}
+			delete[]loginArr;
+			delete[]passArr;
+			userCount++;
+			loginArr = new std::string[userCount];
+			passArr = new std::string[userCount];
+			
+			for (int i = 0; i < userCount - 1; i++)
+			{
+				loginArr[i] = tempLogin[i];
+				passArr[i] = tempPass[i];
+			}
+			//nenea
+			while (true)
+			{
+				std::cout << "Введите название нового товара: ";
+				Getline(nameStr);
+				if (nameStr.size() <= 60 && nameStr.size() >= 2)
+				{
+					nameArr[size - 1] = nameStr;
+					break;
+				}
+				std::cout << "\nОшибка ввода. От 2 до 60 символов\n";
+			}
+			while (true)
+			{
+				std::cout << "Введите кол-во товара: ";
+				Getline(countStr);
+				if (isNumber(countStr))
+				{
+					if (std::stoi(countStr) >= 0 && std::stoi(countStr) <= 1000)
+					{
+						countArr[size - 1] = std::stoi(countStr);
+						break;
+					}
+				}
+				else
+				{
+					std::cout << "\nОшибка ввода\n";
+				}
+			}
+			while (true)
+			{
+				std::cout << "Введите цену товара: ";
+				Getline(priceStr);
+				if (isNumber(priceStr))
+				{
+					if (std::stod(priceStr) > 0 && std::stod(priceStr) <= 10000.0)
+					{
+						priceArr[size - 1] = std::stoi(priceStr);
+						break;
+					}
+				}
+				else
+				{
+					std::cout << "\nОшибка ввода\n";
+				}
+			}
+			idArr[size - 1] = size;
+			delete[]tempID;
+			delete[]tempCount;
+			delete[]tempPrice;
+			delete[]tempName;
+			std::cout << "\n" << idArr[size - 1] << "\t" << std::left << std::setw(30) << nameArr[size - 1] << "\t" << countArr[size - 1] << "\t" << priceArr[size - 1] << "\n\n";
+			std::cout << "Новый товар успешно добавлен\n";
+			Sleep(2000);
+		}
+		else if (choose == "0")
+		{
+			break;
+		}
+		else
+		{
+			std::cout << "\nОшибка ввода\n";
+		}
+	}
+}
+void EditEmployee()
+{
+
+}
+void DeleteEmployee()
+{
+
+}
+void Getline(std::string & stringName)
 {
 	std::getline(std::cin, stringName, '\n');
 }
