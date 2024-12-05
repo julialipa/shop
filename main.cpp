@@ -22,7 +22,7 @@ void CreateStaticStorage();
 void ShowAdminMenu();
 void ShowUserMenu();
 void ShowStorage(int mode = 0);
-int GetID();
+int GetID(int mode = 0);
 void RefillProduct();
 void RemoveProduct();
 void ChangePrice();
@@ -293,18 +293,27 @@ void ShowStorage(int mode)
 	}
 	system("pause");
 }
-int GetID()
+int GetID(int mode)
 {
 	std::string stringID;
 	int result{};
+	int currentSize = 0;
+	if (mode == 1)
+	{
+		currentSize = userCount;
+	}
+	else if (mode == 0)
+	{
+		currentSize = size;
+	}
 	while (true)
 	{
-		std::cout << "Введите ID товара: ";
+		std::cout << "Введите ID: ";
 		Getline(stringID);
 		if (isNumber(stringID))
 		{
 			result = std::stoi(stringID);
-			if (result > 0 && result <= size)
+			if (result > 0 && result <= currentSize)
 			{
 				return result;
 			}
@@ -660,21 +669,26 @@ void DeleteProduct()
 			delete[]countArr;
 			delete[]priceArr;
 			delete[]nameArr;
+			id = GetID();
 			size--;
 			idArr = new int[size];
 			countArr = new int[size];
 			priceArr = new double[size];
 			nameArr = new std::string[size];
-			id = GetID();
 			for (int i = 0, j = 0; i < size, j < size + 1; i++, j++)
 			{
 				if (j == id - 1)
 				{
+					if (id == size + 1)
+					{
+						break;
+					}
 					j++;
 					idArr[i] = tempID[i];
 					countArr[i] = tempCount[j];
 					priceArr[i] = tempPrice[j];
 					nameArr[i] = tempName[j];
+					//тоже самое для пользователей
 				}
 				else
 				{
@@ -719,7 +733,14 @@ void ChangeEmployee()
 		}
 		else if (choose == "3")
 		{
-		
+			if (userCount > 1)
+			{
+
+			}
+			else
+			{
+				std::cout << "Нет пользователей для удаления";
+			}
 		}
 		else if (choose == "0")
 		{
@@ -760,59 +781,32 @@ void AddNewEmployee()
 				loginArr[i] = tempLogin[i];
 				passArr[i] = tempPass[i];
 			}
-			//nenea
+			
 			while (true)
 			{
-				std::cout << "Введите название нового товара: ";
-				Getline(nameStr);
-				if (nameStr.size() <= 60 && nameStr.size() >= 2)
+				std::cout << "Введите логин нового пользователя: ";
+				Getline(newLogin);
+				if (newLogin.size() <= 15 && newLogin.size() >= 4)
 				{
-					nameArr[size - 1] = nameStr;
+					loginArr[userCount - 1] = newLogin;
 					break;
 				}
-				std::cout << "\nОшибка ввода. От 2 до 60 символов\n";
+				std::cout << "\nОшибка ввода. От 4 до 15 символов\n";
 			}
 			while (true)
 			{
-				std::cout << "Введите кол-во товара: ";
-				Getline(countStr);
-				if (isNumber(countStr))
+				std::cout << "Введите пароль нового пользователя: ";
+				Getline(newPass);
+				if (newPass.size() <= 15 && newPass.size() >= 4)
 				{
-					if (std::stoi(countStr) >= 0 && std::stoi(countStr) <= 1000)
-					{
-						countArr[size - 1] = std::stoi(countStr);
-						break;
-					}
+					passArr[userCount - 1] = newPass;
+					break;
 				}
-				else
-				{
-					std::cout << "\nОшибка ввода\n";
-				}
+				std::cout << "\nОшибка ввода. От 4 до 15 символов\n";
 			}
-			while (true)
-			{
-				std::cout << "Введите цену товара: ";
-				Getline(priceStr);
-				if (isNumber(priceStr))
-				{
-					if (std::stod(priceStr) > 0 && std::stod(priceStr) <= 10000.0)
-					{
-						priceArr[size - 1] = std::stoi(priceStr);
-						break;
-					}
-				}
-				else
-				{
-					std::cout << "\nОшибка ввода\n";
-				}
-			}
-			idArr[size - 1] = size;
-			delete[]tempID;
-			delete[]tempCount;
-			delete[]tempPrice;
-			delete[]tempName;
-			std::cout << "\n" << idArr[size - 1] << "\t" << std::left << std::setw(30) << nameArr[size - 1] << "\t" << countArr[size - 1] << "\t" << priceArr[size - 1] << "\n\n";
-			std::cout << "Новый товар успешно добавлен\n";
+			std::cout << "Новый пользователь успешно добавлен\n";
+			delete[]tempLogin;
+			delete[]tempPass;
 			Sleep(2000);
 		}
 		else if (choose == "0")
@@ -827,11 +821,133 @@ void AddNewEmployee()
 }
 void EditEmployee()
 {
-
+	std::string choose, currentPass, newPass;
+	int id{};
+	while (true)
+	{
+		system("cls");
+		std::cout << "1 - Начать\n0 - Отмена\n\nВвод: ";
+		Getline(choose);
+		if (choose == "1")
+		{
+			id = GetID();
+			while (true)
+			{
+				std::cout << "Введите текущий пароль пользователя: " << loginArr[id - 1] << "\n0 - Выход\nВвод: ";
+				Getline(currentPass);
+				{
+					if (currentPass == passArr[id - 1])
+					{
+						while (true)
+						{
+							std::cout << "Введите новый пароль пользователя " << loginArr[id - 1] << ": ";
+							Getline(newPass);
+							if (newPass.size() <= 15 && newPass.size() >= 4)
+							{
+								passArr[id - 1] = newPass;
+								std::cout << "Пароль успешно изменён\n";
+								break;
+							}
+							std::cout << "\nОшибка ввода. От 4 до 15 символов\n";
+						}
+					}
+					else if (currentPass == "0")
+					{
+						break;
+					}
+					else
+					{
+						std::cout << "\nНеверные данные\n";
+					}
+				}
+			}
+		}
+		else if (choose == "0")
+		{
+			break;
+		}
+		else
+		{
+			std::cout << "\nОшибка ввода\n";
+		}
+	}
 }
 void DeleteEmployee()
 {
-
+	std::string choose;
+	int id{};
+	while (true)
+	{
+		system("cls");
+		std::cout << "1 - Начать\n0 - Отмена\n\nВвод: ";
+		Getline(choose);
+		if (choose == "1")
+		{
+			std::string choose;
+			int id{};
+			while (true)
+			{
+				system("cls");
+				std::cout << "1 - Начать\n0 - Отмена\n\nВвод: ";
+				Getline(choose);
+				if (userCount <= 1)
+				{
+					std::cout << "Пользователя больше нет\n";
+					Sleep(1000);
+					break;
+				}
+				if (choose == "1")
+				{
+					for (int i = 1; i < userCount; i++)
+					{
+						std::cout << i << " " << loginArr[i] << "\n";
+					}
+					std::cout << "\n";
+					std::string *tempLogin = new std::string[userCount];
+					std::string *tempPass = new std::string[userCount];
+					for (int i = 0; i < userCount; i++)
+					{
+						tempLogin[i] = loginArr[i];
+						tempPass[i] = passArr[i];
+					}
+					delete[]loginArr;
+					delete[]passArr;
+					userCount--;
+					loginArr = new std::string[userCount];
+					passArr = new std::string[userCount];
+					id = GetID(1);
+					loginArr[0] = tempLogin[0];
+					passArr[0] = tempPass[0];
+					for (int i = 1, j = 1; i < userCount, j < userCount; i++, j++)
+					{
+						if (j == id)
+						{
+							j++;
+							loginArr[i] = tempLogin[j];
+							passArr[i] = tempPass[j];
+						}
+						else
+						{
+							loginArr[i] = tempLogin[j];
+							passArr[i] = tempPass[j];
+						}
+					}
+					std::cout << "Пользователь успешно удален";
+					delete[]tempLogin;
+					delete[]tempPass;	
+					Sleep(800);
+				}
+				else if (choose == "0")
+				{
+					break;
+				}
+				else
+				{
+					std::cout << "\nОшибка ввода\n";
+				}
+			}
+		}
+	}
 }
 void Getline(std::string & stringName)
 {
