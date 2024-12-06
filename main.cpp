@@ -14,6 +14,16 @@ int* idArr = new int[size];
 std::string* nameArr = new std::string[size];
 int* countArr = new int[size];
 double* priceArr = new double[size];
+//касса
+double cash = 9876;
+double cashMoney{};
+double webMoney{};
+//чек
+int checkSize = 1;
+std::string* nameCheckArr = new std::string[checkSize];
+int* countCheckArr = new int[checkSize];
+double* priceCheckArr = new double[checkSize];
+double* totalPriceCheckArr = new double[checkSize];
 //функции
 void Start();
 bool Login();
@@ -34,6 +44,8 @@ void ChangeEmployee();
 void AddNewEmployee();
 void EditEmployee();
 void DeleteEmployee();
+void Selling();
+void AddNewCheckSize();
 void Getline(std::string& stringName);
 
 template <typename Arr>
@@ -49,6 +61,10 @@ int main()
 	delete[]nameArr;
 	delete[]countArr;
 	delete[]priceArr;
+	delete[]totalPriceCheckArr;
+	delete[]countCheckArr;
+	delete[]priceCheckArr;
+	delete[]nameCheckArr;
 	return 0;
 }
 //<><><><><><><><><><>
@@ -162,7 +178,7 @@ void ShowAdminMenu()
 		std::getline(std::cin, choose, '\n');
 		if (choose == "1")
 		{
-
+			Selling();
 		}
 		else if (choose == "2")
 		{
@@ -688,7 +704,6 @@ void DeleteProduct()
 					countArr[i] = tempCount[j];
 					priceArr[i] = tempPrice[j];
 					nameArr[i] = tempName[j];
-					//тоже самое для пользователей
 				}
 				else
 				{
@@ -912,16 +927,20 @@ void DeleteEmployee()
 					}
 					delete[]loginArr;
 					delete[]passArr;
+					id = GetID(1);
 					userCount--;
 					loginArr = new std::string[userCount];
 					passArr = new std::string[userCount];
-					id = GetID(1);
 					loginArr[0] = tempLogin[0];
 					passArr[0] = tempPass[0];
-					for (int i = 1, j = 1; i < userCount, j < userCount; i++, j++)
+					for (int i = 1, j = 1; i < userCount, j < userCount + 1; i++, j++)
 					{
 						if (j == id)
 						{
+							if (id == userCount)
+							{
+								break;
+							}
 							j++;
 							loginArr[i] = tempLogin[j];
 							passArr[i] = tempPass[j];
@@ -949,6 +968,141 @@ void DeleteEmployee()
 		}
 	}
 }
+void Selling()
+{
+	std::string choose, chooseID, chooseCount;
+	bool isFirst = true;
+	int id{}, count{};
+	while (true)
+	{
+		system("cls");
+		std::cout << "1 - Начать новую продажу\n0 - Отмена\n\nВвод: ";
+		Getline(choose);
+		if (choose == "1")
+		{
+			isFirst = true;
+			delete[]totalPriceCheckArr;
+			delete[]countCheckArr;
+			delete[]priceCheckArr;
+			delete[]nameCheckArr;
+			checkSize = 1;
+			totalPriceCheckArr = new double[checkSize];
+			countCheckArr = new int[checkSize];
+			priceCheckArr = new double[checkSize];
+			nameCheckArr = new std::string[checkSize];
+			while (true)
+			{
+				system("cls");
+				ShowStorage();
+				std::cout << "Введите ID товара или \"exit\" завершения покупок\n\nВвод: ";
+				Getline(chooseID);
+				if (chooseID == "exit")
+				{
+					break;
+				}
+				else if (isNumber(chooseID))
+				{
+					id = std::stoi(chooseID);
+					if (id > 0 && id <= size)
+					{
+						std::cout << "Введите кол-во " << nameArr[id - 1] << " для покупки: ";
+						Getline(chooseCount);
+						if (isNumber(chooseCount))
+						{
+							count = std::stoi(chooseCount);
+							if (count >= 0 && count <= countArr[id - 1])
+							{
+								if (isFirst)
+								{
+									nameCheckArr[checkSize - 1] = nameArr[id - 1];
+									countCheckArr[checkSize - 1] = count;
+									priceCheckArr[checkSize - 1] = priceArr[id - 1];
+									totalPriceCheckArr[checkSize - 1] = count * priceArr[id - 1];
+									isFirst == false;
+									//удаление со склада
+								}
+								else
+								{
+									AddNewCheckSize();
+									nameCheckArr[checkSize - 1] = nameArr[id - 1];
+									countCheckArr[checkSize - 1] = count;
+									priceCheckArr[checkSize - 1] = priceArr[id - 1];
+									totalPriceCheckArr[checkSize - 1] = count * priceArr[id - 1];
+								}
+							}
+							else
+							{
+								std::cout << "\nОшибка кол-ва\n";
+								Sleep(1000);
+							}
+						}
+						else
+						{
+							std::cout << "\nОшибка ввода\n";
+							Sleep(1000);
+						}
+					}
+					else
+					{
+						std::cout << "\nОшибка ID\n";
+						Sleep(1000);
+					}
+				}
+				else
+				{
+					std::cout << "\nОшибка ввода\n";
+					Sleep(1000);
+				}
+			}
+			if (!isFirst)
+			{
+				//принт чека!!!
+			}
+		}
+		else if (choose == "0")
+		{
+			break;
+		}
+		else
+		{
+			std::cout << "\nОшибка ввода\n";
+		}
+	}
+}
+void AddNewCheckSize()
+{
+	int* tempCount = new int[checkSize];
+	double* tempTotalPrice = new double[checkSize];
+	double* tempPrice = new double[checkSize];
+	std::string* tempName = new std::string[checkSize];
+	for (int i = 0; i < size; i++)
+	{
+		tempTotalPrice[i] = totalPriceCheckArr[i];
+		tempCount[i] = countCheckArr[i];
+		tempPrice[i] = priceCheckArr[i];
+		tempName[i] = nameCheckArr[i];
+	}
+	delete[]totalPriceCheckArr;
+	delete[]countCheckArr;
+	delete[]priceCheckArr;
+	delete[]nameCheckArr;
+	checkSize++;
+	totalPriceCheckArr = new double[checkSize];
+	countCheckArr = new int[checkSize];
+	priceCheckArr = new double[checkSize];
+	nameCheckArr = new std::string[checkSize];
+	for (int i = 0; i < checkSize - 1; i++)
+	{
+		totalPriceCheckArr[i] = tempTotalPrice[i];
+		countCheckArr[i] = tempCount[i];
+		priceCheckArr[i] = tempPrice[i];
+		nameCheckArr[i] = tempName[i];
+	}
+	delete[]tempTotalPrice;
+	delete[]tempCount;
+	delete[]tempPrice;
+	delete[]tempName;
+}
 void Getline(std::string & stringName)
 {
 	std::getline(std::cin, stringName, '\n');
@@ -962,3 +1116,24 @@ void FillStorage(Arr staticArr, Arr dynamicArr, int staticSize)
 		dynamicArr[i] = staticArr[i];
 	}
 }
+
+/*std::string choose;
+while (true)
+{
+	system("cls");
+	std::cout << "1 - Начать\n0 - Отмена\n\nВвод: ";
+	Getline(choose);
+	if (choose == "1")
+	{
+
+	}
+	else if (choose == "0")
+	{
+		break;
+	}
+	else
+	{
+		std::cout << "\nОшибка ввода\n";
+	}
+
+}*/
